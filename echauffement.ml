@@ -60,7 +60,7 @@ let rec ajouter_n_droite (l : 'a list) (n : int) (elem: 'a) (acc :'a list): 'a l
    de taille n, par des valeurs false*)
 let completion (l:bool list) (n : int) : bool list = 
   if (List.length l > n ) then tronquer l n []
-  else ajouter_n_droite l n false [];;
+  else ajouter_n_droite l (n - List.length l) false [];;
 
 
 (*Question 4*)
