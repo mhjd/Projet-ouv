@@ -111,3 +111,14 @@ let genAlea (n : int) : entier_precis =
     if n = 0 then acc else (aux (n-1) (Random.bits64()::acc))
   in let l = n/64 in let binf = n - l*64 in (aux l (Random.int64 binf ));;
 *)
+
+
+(*Question 7*)
+type profondeur = int ;;
+
+type arbre_decision =
+| Noeud of profondeur * arbre_decision * arbre_decision
+| Feuille of bool ;;
+(* Exemple de test :
+   Noeud(1, Noeud(1, Feuille(true), Feuille(false)), Feuille(true));;
+
