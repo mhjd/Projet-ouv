@@ -1,4 +1,6 @@
-type entier_precis Int64.Int64 list
+open Int64;;
+
+type entier_precis = int64 list;;
 
 let rec ajout_fin l x = 
   match l with 
