@@ -160,45 +160,36 @@ let Noeud(_, sag, _) = cons_arbre (table 25899 16) in liste_feuille sag
 (* L'exo parle d'une liste d'entier précis * pointeur vers node, mais je pense que c'est juste par analogie avec le C
 Genre on peut le faire en OCaml sans pointeur 
 https://ocaml.org/docs/pointers
+EDIT : en faite je pense que faut vraiment mettre un pointeur, sinon ça fait des copies et on se retrouve avec le même graphe/arbre
 *)
 type elemListeDejaVus = ElemListeDejaVus of entier_precis * arbre_decision ;;
 type listeDejaVus = ListeDejaVus of elemListeDejaVus list ;;
 
-(* est_contenu permet de réalisé l'opération :
-   - Si n est la première composante d’un couple stocké dans ListeDejaVus, alors remplacer le
-pointeur vers N (depuis son parent) par un pointeur vers la seconde composante du couple en
-question ;
-*)
+
+(* est_contenu renvoie Some(pointeur) dans le cas où le sous arbre est déjà existant dans la liste déjà vu, et renvoie None dans le cas où c'est pas le cas*)
 let rec est_contenu grand_entier ma_liste_deja_vu  = 
   match ma_liste_deja_vu with
-  | (tete_grand_entier, pointeur_node)::queue -> if tete_grand_entier = grand_entier then true else est_contenu grand_entier queue
-  | [] -> false
+  | (tete_grand_entier, pointeur_node)::queue -> if tete_grand_entier = grand_entier then Some(pointeur_node) else est_contenu grand_entier queue
+  | [] -> None
 ;;
-(*soit on ajoute un élément à ma_liste_deja_vu, soit on supprime le noeud 
-Pour supprimer le noeud, faut pouvoir accéder au parent
-en soit, osef de la liste ma_liste_deja_vu, elle nous sert juste d'outil, tout ce qui nous intéresse, c'est de renvoyer le bon graphe
-Donc comment faire ?
-Je réfléchissais au fait de : 
-  on renvoie le noeud courant + ses enfants dans le cas où c'est pas présent dans la liste, et on l'ajoute à la liste
-  et dans le cas où c'est présent, on renvoie directement le pointeur arbre_decision contenu dans ma_liste_deja_vu
-ce qui me pose problème, c'est que : comment sont envoyer les nouveaux éléments de ma_liste_deja_vu ? car vu que c'est un parcours suffixe, 
-  les appels récursifs sont fait à priori et non à postériori du traitement de la node.
-  
-*)
-let compressionParListe graphe ma_liste =
-  (* J'ai créer la sous-fonction "parcours suffixe" pour facilité la création du parcours
-     On l'enlèvera peut-être par la suite
-  *)
-  let rec parcours_suffixe graphe = 
-    begin 
-      match graphe with
-      | Noeud(profond, sag, sad) -> parcours_suffixe sag ; parcours_suffixe sad ; 
-          let grand_entier = (composition64 liste_feuille graphe) in 
-          est_contenu grand_entier ma_liste Printf.printf "%d, \n" profond
-      | Feuille(booleen) ->  Printf.printf "%b, \n" booleen 
-    end 
-  in parcours_suffixe graphe ;;
+
+
+let rec compressionParListe graphe ma_liste = 
+  begin 
+    match graphe with
+    | Noeud(profond, sag, sad) -> 
+        let nouveau_sag, nouvelle_liste1 = compressionParListe sag ma_liste in
+        let nouveau_sad, nouvelle_liste2 = compressionParListe sad nouvelle_liste1 in 
+        let grand_entier = (composition64 (liste_feuille graphe)) in 
+        begin 
+          match est_contenu grand_entier nouvelle_liste2 with
+          | Some(pointeur) -> (pointeur, nouvelle_liste2)
+          | None -> (Noeud(profond, nouveau_sag, nouveau_sad), (grand_entier, graphe)::nouvelle_liste2)
+        end    
+    | Feuille(booleen) ->  graphe, ma_liste 
+  end 
 (*
+Test :
 compressionParListe (cons_arbre (table 25899 16))   []
 *)
 
