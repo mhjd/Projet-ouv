@@ -163,3 +163,42 @@ https://ocaml.org/docs/pointers
 *)
 type elemListeDejaVus = ElemListeDejaVus of entier_precis * arbre_decision ;;
 type listeDejaVus = ListeDejaVus of elemListeDejaVus list ;;
+
+(* est_contenu permet de réalisé l'opération :
+   - Si n est la première composante d’un couple stocké dans ListeDejaVus, alors remplacer le
+pointeur vers N (depuis son parent) par un pointeur vers la seconde composante du couple en
+question ;
+*)
+let rec est_contenu grand_entier ma_liste_deja_vu  = 
+  match ma_liste_deja_vu with
+  | (tete_grand_entier, pointeur_node)::queue -> if tete_grand_entier = grand_entier then true else est_contenu grand_entier queue
+  | [] -> false
+;;
+(*soit on ajoute un élément à ma_liste_deja_vu, soit on supprime le noeud 
+Pour supprimer le noeud, faut pouvoir accéder au parent
+en soit, osef de la liste ma_liste_deja_vu, elle nous sert juste d'outil, tout ce qui nous intéresse, c'est de renvoyer le bon graphe
+Donc comment faire ?
+Je réfléchissais au fait de : 
+  on renvoie le noeud courant + ses enfants dans le cas où c'est pas présent dans la liste, et on l'ajoute à la liste
+  et dans le cas où c'est présent, on renvoie directement le pointeur arbre_decision contenu dans ma_liste_deja_vu
+ce qui me pose problème, c'est que : comment sont envoyer les nouveaux éléments de ma_liste_deja_vu ? car vu que c'est un parcours suffixe, 
+  les appels récursifs sont fait à priori et non à postériori du traitement de la node.
+  
+*)
+let compressionParListe graphe ma_liste =
+  (* J'ai créer la sous-fonction "parcours suffixe" pour facilité la création du parcours
+     On l'enlèvera peut-être par la suite
+  *)
+  let rec parcours_suffixe graphe = 
+    begin 
+      match graphe with
+      | Noeud(profond, sag, sad) -> parcours_suffixe sag ; parcours_suffixe sad ; 
+          let grand_entier = (composition64 liste_feuille graphe) in 
+          est_contenu grand_entier ma_liste Printf.printf "%d, \n" profond
+      | Feuille(booleen) ->  Printf.printf "%b, \n" booleen 
+    end 
+  in parcours_suffixe graphe ;;
+(*
+compressionParListe (cons_arbre (table 25899 16))   []
+*)
+
