@@ -1,10 +1,13 @@
 
 
-all : tests
+all : grands_entiers.cmo arbre_decision.cmo compression.cmo tests.cmo tests
 
 
 tests :  grands_entiers.cmo arbre_decision.cmo compression.cmo tests.cmo
 	ocamlc grands_entiers.cmo  arbre_decision.cmo  compression.cmo tests.cmo -o tests.exe
+
+proposition.cmo : 
+	ocamlc -c proposition.ml
 
 grands_entiers.cmo : 
 	ocamlc -c grands_entiers.ml

@@ -7,6 +7,18 @@ Genre on peut le faire en OCaml sans pointeur
 https://ocaml.org/docs/pointers
 EDIT : en faite je pense que faut vraiment mettre un pointeur, sinon ça fait des copies et on se retrouve avec le même graphe/arbre
 *)
+
+(*Fonction permettant de calculer l'égalité entre deux entiers précis*)
+let egalite_entier_precis (e1:entier_precis) (e2:entier_precis) : bool = 
+  let rec aux (e1:entier_precis) (e2:entier_precis) (acc:bool) : bool = 
+    match (e1,e2) with 
+    | ([],[]) -> acc
+    | (h::tl,[])-> false
+    | ([],h::tl) -> false
+    | (h1::tl1, h2::tl2) -> aux tl1 tl2 ((h1=h2) && acc)
+  in (aux e1 e2 true);;
+
+  
 type elemListeDejaVus = ElemListeDejaVus of entier_precis * arbre_decision ;;
 type listeDejaVus = ListeDejaVus of elemListeDejaVus list ;;
 
