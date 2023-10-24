@@ -156,3 +156,10 @@ Pour un sous-arbre :
 let Noeud(_, sag, _) = cons_arbre (table 25899 16) in liste_feuille sag
 *)
 
+
+(* L'exo parle d'une liste d'entier précis * pointeur vers node, mais je pense que c'est juste par analogie avec le C
+Genre on peut le faire en OCaml sans pointeur 
+https://ocaml.org/docs/pointers
+*)
+type elemListeDejaVus = ElemListeDejaVus of entier_precis * arbre_decision ;;
+type listeDejaVus = ListeDejaVus of elemListeDejaVus list ;;
