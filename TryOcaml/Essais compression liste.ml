@@ -104,7 +104,6 @@ Cela serait pertinent de créer un type table_de_verite, au lieu de directement 
 compressionParListe( new_pointer (cons_arbre (table 25899 16))) [];;
 *)
 
-(*Problème ici : on va trop profond quand on construit l'arbre et on tombe sur des cas qui ne devraient pas arriver !*)
 let cons_arbre (t : bool list) : arbre_decision =
   let rec cons_arbre_head (t : bool list) dpth =
     match t with 
