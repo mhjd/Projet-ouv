@@ -88,7 +88,7 @@ let deuxieme_moitie_false (liste : bool list) :bool =
 
 (*Version de Danaël *)
 let rec compressionParListe graphe ma_liste = 
-    match deref_pointer graphe with
+    match graphe with
     | Noeud(profond, sag, sad) -> 
         (*Parcourt en profondeur de l'arbre*)
         let nouveau_sag, nouvelle_liste1 = compressionParListe sag ma_liste in
