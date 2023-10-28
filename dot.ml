@@ -1,4 +1,5 @@
 open Compression
+open Arbre_decision
 open Grands_entiers
 
 
@@ -19,10 +20,10 @@ let format_print_graphe f g =
 let dot (nom : string) (g : arbre_decision ref) : unit =
   let f = open_out nom in (*Ouverture du fichier où on met le graphe*)
 
-
+  (* *)
     (*Fonction locale permettant de mettre tous les noeuds de l'arbre au bon format en faisant un parcourt du graphe*)
     let rec print_graphe (graphe : arbre_decision ref) (bordure : arbre_decision ref list) (vus : arbre_decision ref list): unit = 
-      if (not (List.mem graphe vus)) then format_print_graphe f graphe ;  (*Si on n'a pas déjà imprimé ce noeud, on le fait*)
+    if (not (List.memq graphe vus)) then format_print_graphe f graphe ;  (*Si on n'a pas déjà imprimé ce noeud, on le fait*)
      match (!graphe, bordure) with 
       | (Feuille(booleen),[])-> ()    (*On a fini la bordure et on est sur un noeud sans fils*)
       | (Feuille(_),h::tl) -> (print_graphe h tl (graphe::vus))   (*Noeud sans fils mais toujours des noeuds dans la bordure*)
@@ -37,4 +38,4 @@ let dot (nom : string) (g : arbre_decision ref) : unit =
 
 let (g,_) = (compressionParListe (cons_arbre (table 25899 16))   []) in dot "essai.dot" g ;;
 
-let g = cons_arbre (table 25899 16)
+let g = cons_arbre (table 25899 16) in dot "arbre_non_comp.dot" (ref g);;
