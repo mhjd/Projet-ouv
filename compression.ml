@@ -1,4 +1,4 @@
-Open Grands_entiers
+open Grands_entiers
 
 
 (*Question 7*)
@@ -90,6 +90,10 @@ let deuxieme_moitie_false (liste : bool list) :bool =
 
 
 let rec compressionParListe graphe ma_liste = 
+
+  (*valeurs utiles peu importe la forme de l'arbre*)
+  let feuilles = liste_feuille graphe in 
+  let grand_entier = (composition64 feuilles) in 
   match graphe with
   | Noeud(profond, sag, sad) -> 
         (*Parcourt en profondeur de l'arbre*)
@@ -97,9 +101,7 @@ let rec compressionParListe graphe ma_liste =
       let nouveau_sad, nouvelle_liste2 = compressionParListe !sad nouvelle_liste1 in 
 
         (*Valeurs utiles à calculer*)
-      let feuilles = liste_feuille graphe in 
-      let grand_entier = (composition64 feuilles) in 
-
+      
         (*Début de la compression*)
 
       if (deuxieme_moitie_false feuilles) then 
@@ -116,7 +118,16 @@ let rec compressionParListe graphe ma_liste =
               in 
               ( nouveau_noeud , (grand_entier, nouveau_noeud)::nouvelle_liste2)      (*On retourne le couple graphe / liste dont la tête est un couple grand entier/noeud associé*)
         )
-  | Feuille(booleen) ->  let rg = ref graphe in (rg, (composition64 [booleen],rg)::ma_liste )
+  | Feuille(booleen) -> ( (*On évite la duplication des feuilles*)
+      match (est_contenu grand_entier ma_liste) with     (*Consultation de la liste de noeuds visités*)
+      | Some(pointeur) -> (*Règle de compression D *) 
+        (pointeur, ma_liste)                             (*On remplace pour le père ce noeud par l'autre qui lui correspond*)
+
+      | None -> (*Pas de compression à ce niveau*) 
+        let nouveau_noeud =  ref (graphe)  (*On fait un nouveau noeud*)
+        in 
+        ( nouveau_noeud , (grand_entier, nouveau_noeud)::ma_liste) 
+    )
 (*
 Test :
 compressionParListe (cons_arbre (table 25899 16))   []
