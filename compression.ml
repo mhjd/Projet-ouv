@@ -104,20 +104,16 @@ let rec compressionParListe graphe ma_liste =
       
         (*Début de la compression*)
 
-      if (deuxieme_moitie_false feuilles) then 
-          (*règle de Compression Z*)
-        ( nouveau_sag, nouvelle_liste2)
-      else 
-        (
-          match (est_contenu grand_entier nouvelle_liste2) with     (*Consultation de la liste de noeuds visités*)
-          | Some(pointeur) -> (*Règle de compression D *) 
+        (*On avait implanté ici la règle Z, mais elle ne sert à rien.*)
+          (match (est_contenu grand_entier nouvelle_liste2) with     (*Consultation de la liste de noeuds visités*)
+          | Some(pointeur) -> (*Règle de compression M *) 
               (pointeur, nouvelle_liste2)                             (*On remplace pour le père ce noeud par l'autre qui lui correspond*)
 
           | None -> (*Pas de compression à ce niveau*) 
               let nouveau_noeud =  ref (Noeud (profond,nouveau_sag,nouveau_sad))  (*On fait un nouveau noeud*)
               in 
               ( nouveau_noeud , (grand_entier, nouveau_noeud)::nouvelle_liste2)      (*On retourne le couple graphe / liste dont la tête est un couple grand entier/noeud associé*)
-        )
+          )
   | Feuille(booleen) -> ( (*On évite la duplication des feuilles*)
       match (est_contenu grand_entier ma_liste) with     (*Consultation de la liste de noeuds visités*)
       | Some(pointeur) -> (*Règle de compression D *) 

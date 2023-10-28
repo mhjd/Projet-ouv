@@ -15,6 +15,7 @@ let format_print_graphe f g =
     Printf.fprintf f "\n%d -> %d;" (Obj.magic g) (Obj.magic fd);
   ;;
 
+  
 
 let dot_bck (nom : string) (g : arbre_decision ref) : unit =
   let f = open_out nom in (*Ouverture du fichier où on met le graphe*)
@@ -30,13 +31,13 @@ let dot_bck (nom : string) (g : arbre_decision ref) : unit =
           try (print_graphe fg (graphe::noeuds_visites); raise (Fin_de_visite_de_branche (graphe::noeuds_visites))) with
             Fin_de_visite_de_branche nouvelle_liste -> 
               (try (print_graphe fd nouvelle_liste) with 
-              Fin_de_visite_de_branche nouvelle_liste2 -> Printf.printf "Fin de descendance")
+              Fin_de_visite_de_branche nouvelle_liste2 -> ())
           )
         )
         else 
           raise (Fin_de_visite_de_branche noeuds_visites)
       )
-      with Fin_de_visite_de_branche l -> Printf.printf "On a tout visité sur cette branche !"
+      with Fin_de_visite_de_branche l -> ()
     in 
       Printf.fprintf f "digraph g {\n";   (*Préambule*)
       print_graphe g []; 
