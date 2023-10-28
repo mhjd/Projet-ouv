@@ -111,13 +111,12 @@ let rec compressionParListe graphe ma_liste =
           | Some(pointeur) -> (*Règle de compression D *) 
               (pointeur, nouvelle_liste2)                             (*On remplace pour le père ce noeud par l'autre qui lui correspond*)
 
-          | None -> (*Pas de compression à ce niveau*)
-              let nouveau_noeud = Noeud (profond,nouveau_sag,nouveau_sad)  (*On fait un nouveau noeud*)
+          | None -> (*Pas de compression à ce niveau*) 
+              let nouveau_noeud =  ref (Noeud (profond,nouveau_sag,nouveau_sad))  (*On fait un nouveau noeud*)
               in 
-              ( ref nouveau_noeud , (grand_entier, ref nouveau_noeud)::nouvelle_liste2)      (*On retourne le couple graphe / liste dont la tête est un couple grand entier/noeud associé*)
+              ( nouveau_noeud , (grand_entier, nouveau_noeud)::nouvelle_liste2)      (*On retourne le couple graphe / liste dont la tête est un couple grand entier/noeud associé*)
         )
-  | Feuille(booleen) ->  (ref graphe, ma_liste )
-   
+  | Feuille(booleen) ->  let rg = ref graphe in (rg, (composition64 [booleen],rg)::ma_liste )
 (*
 Test :
 compressionParListe (cons_arbre (table 25899 16))   []
