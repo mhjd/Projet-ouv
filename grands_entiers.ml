@@ -13,6 +13,8 @@ let ajout_fin (l:'a list) (x:'a) : 'a list=
     | hd :: tl -> (aux tl (hd::acc))
   in aux (List.rev l) [x];;
 
+
+ (*Ces primitives ne nous serviront pas par la suite, nous utiliserons un simple pattern matching sur les listes*) 
 (*Primitive permettant de récupérer la valeur en tête d'une liste*)
 let recup_tete (l : 'a list) : 'a = 
   match l with
@@ -20,7 +22,7 @@ let recup_tete (l : 'a list) : 'a =
   | hd::tl -> hd;;
 
 (*Primitive permettant de récupérer la liste l sans sa tête*)
-let list_decapit l = 
+let list_decapit (l : 'a list) : 'a list = 
   match l with
   | [] -> []
   | hd::tl -> tl;;
@@ -115,15 +117,17 @@ let genAlea (n : int) : entier_precis =
   in let l = n/64 in let binf = n - l*64 in (aux l [(Random.int64 (Int64.of_int binf) )]);;
 
 
-  let print_entier_precis entier = 
+  let print_entier_precis (entier : entier_precis) : unit= 
     Printf.printf "[";
-    let rec aux e = 
+    let rec aux (e : entier_precis) : unit = 
       (match e with 
       |[] -> Printf.printf "]\n"
       | h::[] -> Printf.printf "%Ld]\n" h 
       | h::tl -> Printf.printf "%Ld;\t" h ; aux tl)
     in (aux entier);;
 
+
+  Random.self_init ();;
 Printf.printf("\n~~ Test de la génération aléatoire de grands entiers ~~ \n\n");
   print_entier_precis (genAlea 100);;
 
