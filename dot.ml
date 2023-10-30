@@ -15,8 +15,6 @@ let format_print_graphe f g =
   ;;
 
 
-
-
 let dot (nom : string) (g : arbre_decision) : unit =
   let f = open_out nom in (*Ouverture du fichier où on met le graphe*)
 
@@ -36,7 +34,7 @@ let dot (nom : string) (g : arbre_decision) : unit =
   close_out f;
 ;;
 
+module FL = AlgoCompression (SetList);;
 
-let (g,_) = (compressionParListe (cons_arbre (table 25899 16))   SetList.empty ) in dot "essai.dot" g ;;
-
-let g = cons_arbre (table 25899 16) in dot "arbre_non_comp.dot" ( g);;
+let g = cons_arbre (table 25899 16) in
+(dot "arbre_non_comp.dot" g) ; (dot "arbre_comp.dot" (FL.compression g));;
