@@ -29,7 +29,6 @@ module AlgoCompression (E : SetDejaVu) =
     let rec aux (graphe : arbre_decision) (deja_vus : E.t) = 
       (*valeurs utiles peu importe la forme de l'arbre*)
       let feuilles = liste_feuille graphe in 
-      let grand_entier = (composition64 feuilles) in 
       match graphe with
       | Noeud(profond, sag, sad) -> 
             (*Parcourt en profondeur de l'arbre avec mise à jour de la liste des éléments vus*)
@@ -40,15 +39,18 @@ module AlgoCompression (E : SetDejaVu) =
             if (deuxieme_moitie_false feuilles) then (nouveau_sag, n_deja_vus2)
 
             else 
-            (match (E.mem grand_entier n_deja_vus2) with     (*Consultation de la liste de noeuds visités*)
+            (let grand_entier = (composition64 feuilles) in 
+              match (E.mem grand_entier n_deja_vus2) with     (*Consultation de la liste de noeuds visités*)
               | Some(pointeur) -> (*Règle de compression M *)   (pointeur, n_deja_vus2)                             (*On remplace pour le père ce noeud par l'autre qui lui correspond*)
               | None -> (*Pas de compression à ce niveau*) 
                 let nouveau_noeud =   (Noeud (profond,nouveau_sag,nouveau_sad))  (*On fait un nouveau noeud*)
                   in 
                   ( nouveau_noeud , (E.insert (grand_entier, nouveau_noeud) n_deja_vus2))      (*On retourne le couple graphe / liste dont la tête est un couple grand entier/noeud associé*)
             )
-      | Feuille(booleen) ->  (*On évite la duplication des feuilles*)
-        (match (E.mem grand_entier deja_vus) with     (*Consultation de la liste de noeuds visités*)
+      | Feuille(booleen) ->  (*On évite la duplication des feuilles également*)
+        (let grand_entier = (composition64 feuilles) in 
+
+          match (E.mem grand_entier deja_vus) with     (*Consultation de la liste de noeuds visités*)
           | Some(pointeur) -> (*Règle de compression M *) 
             (pointeur, deja_vus)                             (*On remplace pour le père ce noeud par l'autre qui lui correspond*)
           | None -> (*Pas de compression à ce niveau*)
