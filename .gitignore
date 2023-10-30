@@ -1,3 +1,10 @@
 *.cmo
 *.cmi
 *.exe
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.toc
+*.gz
