@@ -21,7 +21,7 @@ module AlgoCompression (E : SetDejaVu) =
       | h::tl -> if i < moitie then (aux tl (i+1))    (*On ne regarde que la seconde moitié de la liste !*)
           else if h then false                     (*Si h est vrai à ce stade, la fonction renvoie faux directement*)
           else (aux tl (i+1))
-    in (aux liste 0);;
+    in (aux liste 0)
 
 
   (*Fonction implémentant l'algorithme*)

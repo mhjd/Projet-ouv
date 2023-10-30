@@ -35,6 +35,9 @@ let dot (nom : string) (g : arbre_decision) : unit =
 ;;
 
 module FL = AlgoCompression (SetList);;
+module FT = AlgoCompression (SetTree);;
 
 let g = cons_arbre (table 25899 16) in
-(dot "arbre_non_comp.dot" g) ; (dot "arbre_comp.dot" (FL.compression g));;
+(dot "arbre_non_comp.dot" g) ; (dot "arbre_comp_l.dot" (FT.compression g)) ; 
+;;
+
