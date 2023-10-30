@@ -98,16 +98,32 @@ let table x n = completion (decomposition [Int64.of_int x] ) n;;
 (*Question 6*)
 (*Fonction générant un grand entier aléatoire de n bits au maximum*)
 
+
+
+(*
 (*Cette version pose problème car avec Random.int64 on est bornés par le max codable sur 64 bits en entier signés, 
   nous ne pouvons pas faire autrement avec Random*)
   let genAlea (n : int) : entier_precis = 
     let rec aux (n : int) (acc : entier_precis) = 
       if n = 0 then acc else (aux (n-1) ((Random.int64 Int64.max_int) ::acc))
     in let l = n/64 in let binf = n - l*64 in (aux l [(Random.int64 (Int64.of_int binf) )]);;
-  
-(* Cette version ne marche pas avant OCaml 4.14... On ne l'a pas encore dans les toplevel
+  *)
+(* Cette version ne marche pas avant OCaml 4.14... On ne l'a pas encore dans les toplevel*)
 let genAlea (n : int) : entier_precis = 
   let rec aux (n : int) (acc : entier_precis) = 
     if n = 0 then acc else (aux (n-1) (Random.bits64()::acc))
-  in let l = n/64 in let binf = n - l*64 in (aux l (Random.int64 binf ));;
-*)
+  in let l = n/64 in let binf = n - l*64 in (aux l [(Random.int64 (Int64.of_int binf) )]);;
+
+
+  let print_entier_precis entier = 
+    Printf.printf "[";
+    let rec aux e = 
+      (match e with 
+      |[] -> Printf.printf "]\n"
+      | h::[] -> Printf.printf "%Ld]\n" h 
+      | h::tl -> Printf.printf "%Ld;\t" h ; aux tl)
+    in (aux entier);;
+
+Printf.printf("\n\n ~~ Test de la génération aléatoire de grands entiers ~~ \n");
+  print_entier_precis (genAlea 100);;
+
