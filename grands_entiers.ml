@@ -124,6 +124,7 @@ let genAlea (n : int) : entier_precis =
       | h::tl -> Printf.printf "%Ld;\t" h ; aux tl)
     in (aux entier);;
 
-Printf.printf("\n\n ~~ Test de la génération aléatoire de grands entiers ~~ \n");
+Printf.printf("\n~~ Test de la génération aléatoire de grands entiers ~~ \n\n");
   print_entier_precis (genAlea 100);;
+
 
