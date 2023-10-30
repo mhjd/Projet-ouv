@@ -25,8 +25,8 @@ module AlgoCompression (E : SetDejaVu) =
 
 
   (*Fonction implémentant l'algorithme*)
-  let compression graphe : arbre_decision = 
-    let rec aux (graphe : arbre_decision) (deja_vus : E.t) = 
+  let compression (graphe : arbre_decision) : arbre_decision = 
+    let rec aux (graphe : arbre_decision) (deja_vus : E.t) : (arbre_decision * E.t) = 
       (*valeurs utiles peu importe la forme de l'arbre*)
       let feuilles = liste_feuille graphe in 
       match graphe with
@@ -35,9 +35,7 @@ module AlgoCompression (E : SetDejaVu) =
           let nouveau_sag, n_deja_vus1 = aux sag deja_vus in
           let nouveau_sad, n_deja_vus2 = aux sad n_deja_vus1 in 
             (*Début de la compression*)
-
             if (deuxieme_moitie_false feuilles) then (nouveau_sag, n_deja_vus2)
-
             else 
             (let grand_entier = (composition64 feuilles) in 
               match (E.mem grand_entier n_deja_vus2) with     (*Consultation de la liste de noeuds visités*)
