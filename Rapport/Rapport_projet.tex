@@ -8,6 +8,7 @@
 \usepackage{amssymb}
 \usepackage{graphicx}
 \usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}
+\usepackage{ccaption}
 \author{Javaid Mohammad-Habib, Carbonneau Danaël}
 
 \usepackage[Glenn]{fncychap}
@@ -19,47 +20,53 @@
 
 \usepackage{xcolor}
 \usepackage{listings}
-\lstset{numbers=left, 
-		stepnumber=1,
-		breaklines=true,
-		numberstyle=\footnotesize,
-		captionpos=b,
-		}
 
-\newcommand{\pythonstyle}{\lstset{
-		language=python,
-		basicstyle=\ttfamily ,
-		keywordstyle=\bfseries\color{blue},
-		commentstyle=\itshape\color{green}}
-}
-\newcommand{\maclestyle}{\lstset{
-		language=caml,
-		basicstyle=\ttfamily ,
-		keywordstyle=\bfseries\color{blue},
-		commentstyle=\itshape\color{green},
-		otherkeywords={reg,default,exec}}
-}
-		
-\newcommand{\cstyle}{\lstset{
-		language=C,
-		basicstyle=\ttfamily,
-		keywordstyle=\bfseries\color{blue},
-		commentstyle=\itshape\color{green}}
-}
 
-\newcommand{\verilogstyle}{\lstset{
-		language=Verilog,
-		basicstyle=\ttfamily,
-		keywordstyle=\bfseries\color{blue},
-		commentstyle=\itshape\color{green}}
-}
+	
+	
+\definecolor{darkWhite}{rgb}{0.94,0.94,0.94}
+ 
+\lstset{
+  aboveskip=3mm,
+  belowskip=-2mm,
+  backgroundcolor=\color{darkWhite},
+  basicstyle=\ttfamily,
+  breakatwhitespace=false,
+  breaklines=true,
+  captionpos=b,
+  commentstyle=\color{green},
+  extendedchars=true,
+  framexleftmargin=16pt,
+  framextopmargin=3pt,
+  framexbottommargin=6pt,
+  frame=tb,
+  keepspaces=true,
+  keywordstyle=\color{blue},
+  otherkeywords={module},
+  language=caml,
+  morekeywords={*,...},
+  numbers=left,
+  numbersep=10pt,
+  numberstyle=\tiny\color{black},
+  rulecolor=\color{black},
+  showspaces=false,
+  showstringspaces=false,
+  showtabs=false,
+  stepnumber=1,
+  stringstyle=\color{gray},
+  tabsize=4,
+  title=\lstname,
+}	
+	
+	
+	
+	
+\usepackage{enumitem}
+\usepackage{pifont}
+\setitemize[1]{font=\bfseries, label= \color{teal} \ding{227}  }
+\setitemize[0]{font=\bfseries, label= \color{olive} \ding{216}  }
 
-\newcommand{\vhdlstyle}{\lstset{
-		language=VHDL,
-		basicstyle=\ttfamily,
-		keywordstyle=\bfseries\color{blue},
-		commentstyle=\itshape\color{green}}
-}
+
 \begin{document}
 
 
@@ -117,11 +124,13 @@ Le code associé à cette partie se trouve dans le fichier \textit{Arbre\_decisi
 La structure est faite à l'aide d'un type Somme (et d'un alias de type pour la profondeur) :
 
 \medskip
-\texttt{type profondeur = int}
 
- \texttt{type arbre\_decision = Feuille of boolean \\
- | Noeud of profondeur* arbre\_decision * arbre\_decision}.
-
+\begin{lstlisting}
+type profondeur = int
+type arbre_decision = 
+	| Feuille of boolean 
+	| Noeud of profondeur* arbre_decision * arbre_decision.
+\end{lstlisting}
 \medskip
 
 
@@ -152,29 +161,57 @@ De là, on veut pouvoir utiliser n'importe quelle structure pour laquelle seraie
 
 On arrive ainsi à factoriser notre code et séparer le déroulement de l'algorithme de la gestion sous-jacente, de notre ensemble d'arbres déjà vus.
 
+
+
+
+
+
 \subsection{Manipulation des arbres de compression}
 
 Dans l'algorithme de compression, nous voulons remplacer, lorsqu'une règle de compression est appliquée, le noeud courant N par un autre noeud vis à vis de son père. Étant donné que notre fonction reconstruit l'arbre compressé en fonction des appels récursifs, il nous suffit pour cela de retourner le bon nœud remplaçant le nœud N par celui qui lui correspond dans notre arbre compressé.
 
-La représentation des valeurs, et notamment des types sommes, nous permet de ne pas avoir besoin d'utiliser de références : les valeurs en OCaml sont soit des entiers, soit des pointeurs vers un bloc sur le tas. Lorsqu'on ajoute un noeud en tête de notre ensemble de (grand entier, noeud) déjà visités, on créé sur le tas un bloc contenant un pointeur vers notre noeud, et un pointeur vers la suite de la liste. Lorsqu'on le récupère ailleurs dans le code, on ne récupère alors pas de copie mais bien un pointeur vers le nœud souhaité. 
+La représentation des valeurs, et notamment des types sommes, nous permet de ne pas avoir besoin d'utiliser de références : les valeurs en OCaml sont soit des entiers , soit des pointeurs vers un bloc sur le tas. Lorsqu'on ajoute un noeud en tête de notre ensemble de (grand entier, noeud) déjà visités, on créé sur le tas un bloc contenant un pointeur vers notre noeud, et un pointeur vers la suite de la liste. Lorsqu'on le récupère ailleurs dans le code, on ne récupère alors pas de copie mais bien un pointeur vers le nœud souhaité. 
+
+
+\subsection{La fonction compressionParListe}
+
+\subsubsection{Le module \texttt{SetList}}
+
+La première approche pour représenter notre ensemble de couples \texttt{(grand\_entier, arbre\_decision)} est de le faire par une liste. Il nous suffit pour ça d'écrire un module \texttt{SetList}, dont la signature est décrite par \texttt{SetDejaVu}. Sa structure  comporte : 
+
+
+\begin{itemize}
+\item Un type ens défini comme une liste de couples \texttt{(grand\_entier, arbre\_decision)}
+\item La valeur empty, définie comme étant une liste vide
+\item Une fonction d'insertion, qui se fait par un simple ajout en tête dans la liste.
+\item Une fonction de recherche, qui se fait en parcourant la liste en comparant les grands entiers présents avec celui passé en paramètres, et en rendant un \texttt{arbre\_decision option} (\texttt{Some(arbre)} s'il est présent dans la liste, \texttt{None} sinon).
+
+\end{itemize}
+
+\subsubsection{Définir la fonction grâce aux modules et au foncteur}
+
+Maintenant que nous avons un module décrivant une manière de gérer ces ensembles, nous pouvons instancier le foncteur AlgoCompression en lui passant en paramètres notre module \texttt{SetList} avec \texttt{module FL = AlgoCompression(SetList)}
+
+On peut alors définir la fonction compressionParListe avec ce foncteur : \texttt{let compressionParListe = FL.compression}.
 
 
 \subsection{Faire des graphiques avec le langage dot}
 
 Dans le fichier \textit{dot.ml}, nous avons écrit deux fonctions : une qui parcourt l'arbre de décision pour écrire dans un fichier ce qu'il faut pour chaque nœud, et une qui s'occupe de formater comme souhaité chaque noeud.
 
-\subsubsection{Formattage en dot}
+\subsubsection{Formatage en dot}
 
 Dot nous permet de faire des graphes en décrivant les arrêtes, et potentiellement les nœuds, en les écrivant lignes après lignes. Il nous faut donc, pour transcrire facilement notre graphe, un identifiant unique par nœud (qui ne sera pas affiché, grâce aux labels). On peut ensuite, pour chaque nœud interne du graphe, écrire dans notre fichier la mise en forme correspondante : 
 
-\begin{description}
-\item[Noeud interne]  : \texttt{idN [label = profondeur];
- idN -> idFG [style=dotted]; 
- idN -> idFD [style=dotted];}
- 
- \item [Feuille] :\texttt{idN [label = True|False]}
-\end{description}
 
+\begin{lstlisting}
+Noeud(profondeur, fils_gauche, fils_droit)  -> 
+	idNoeud [label = profondeur];
+	idNoeud -> idFils_gauche [style=dotted]; 
+ 	idNoeud -> idFils_droit [style=dotted];
+
+| Feuille(boolean) ->  idN [label = boolean];
+\end{lstlisting}
 
 \subsubsection{Des identifiants uniques... avec un peut de magie}
 Afin d'avoir un \textbf{idN unique}, nous avons choisi d'utiliser la fonction \texttt{Obj.magic}. Il s'agit d'une fonction (\textit{peu recommandée}) de la librairie standard OCaml : elle force un cast de type sur l'objet qu'elle manipule (soit un entier, soit un bloc, donc un pointeurs vers le tas), qui est dans tous les cas codé sur un entier (soit de taille 32bits, doit de taille 64), et retourne sa valeur "réelle" (au runtime). 
@@ -184,28 +221,154 @@ Afin d'avoir un \textbf{idN unique}, nous avons choisi d'utiliser la fonction \t
 
 \subsubsection{Résultats}
 
-Nous avons alors pu obtenir un affichage graphique de l'arbre de l'énoncé avant et après compression. 
+Nous avons alors pu obtenir un affichage graphique de l'arbre de l'énoncé avant (\ref{fig1}) et après compression (\ref{fig2}). 
 
 
 \begin{figure}[hbtp]
 \centering
 \includegraphics[scale=0.3]{../Images/arbre_non_compresse.png} 
-\caption{Arbre de décision issu de la table de vérité de taille 16 construite sur le grand entier [25899]}
+\caption{Arbre de décision issu de la table de vérité de taille 16 construite sur [25899]}
+\label{fig1}
 \end{figure}
 
 
 
 \begin{figure}[hbtp]
 \centering
-\includegraphics[scale=0.3]{../Images/arbre_compresse.png}
-\caption{ZDD construit sur le grand entier [25899]}
+\includegraphics[scale=0.3]{../Images/arbre_compresse_par_liste.png}
+\caption{ZDD construit sur le grand entier [25899],\\ compressé avec CompressionParListe}
+\label{fig2}
 \end{figure}
 
 L'algorithme de compression que nous avons écrit nous semble alors fonctionner conformément aux attentes.
 
 \section{Compression avec historique stocké dans une structure arborescente}
 
-\section{Analyse de complexité}
+Le code correspondant à la structure arborescente se trouve dans le module \texttt{SetTree}, présent dans le fichier \textit{deja\_vus.ml}. La définition de la fonction de compression dans \textit{compression.ml}.
+
+\subsection{La fonction compressionParArbre}
+
+\subsubsection{Le module \texttt{SetTree}}
+Le module \texttt{SetTree} répond à la signature décrite par \texttt{SetDejaVu}. Sa structure comporte : 
+
+
+\begin{itemize}
+\item Un type ens défini comme un arbre dont les feuilles sont vides et les nœuds sont des \texttt{arbre\_decision option}, c'est-à-dire qu'il peut soit y avoir un arbre de décision sur le nœud, soit rien.
+
+\item La valeur empty, définie comme étant une feuille.
+
+\item Une fonction d'insertion, qui se fait en parcourant les bits du grand entier du couple à insérer en allant dans le sous arbre gauche si le bit est à 0, à droite si le bit est à 1. Lorsqu'on a fini de parcourir les bits, on insère le pointeur dans le nœud courant\footnote{Dans le cas, qui n'est pas interdit par notre structure, mais qui ne devrait pas arriver vue la manière dont on se sert de ces arborescences, où on insère un couple dont le grand entier est déjà dans l'arborescence, on remplace l'ancienne valeur du pointeur par la nouvelle.}. 
+
+\item Une fonction de recherche, qui se fait en parcourant les bits du grand entier du couple en suivant le même aiguillage. Lorsqu'on a fini de regarder les bits du grand entier, on retourne le \texttt{arbre\_decision option} correspondant (\texttt{None} s'il n'y a pas le pointeur).
+\end{itemize} 
+
+
+\subsubsection{Définir la fonction \texttt{compressionParArbre}}
+
+Maintenant que nous avons un module décrivant une manière de gérer ces ensembles avec des arbres, nous pouvons instancier le foncteur \texttt{AlgoCompression} en lui passant en paramètres notre module \texttt{SeTree}, on peut alors définir la fonction \texttt{compressionParArbre} avec ce foncteur : 
+
+\begin{lstlisting}
+module FT = AlgoCompression(SetTree)
+let compressionParArbre = FT.compression
+
+\end{lstlisting}
+
+Adapter le code de l'algorithme à la nouvelle structure se fait alors plutôt aisément grâce au foncteur.
+
+
+\subsection{Résultats}
+
+Dans \textit{dot.ml}, on ajoute alors une autre ligne de code appliquant la fonction dot à l'arbre compressé avec la fonction \texttt{compressionArbre}.
+
+On obtient alors une image de l'arbre compressé identique à celui de notre réalisé à l'aide de la compression par liste \ref{fig3}.
+
+\begin{figure}[hbtp]
+\centering
+\includegraphics[scale=0.3]{../Images/arbre_compresse_par_arbre.png}
+\caption{ZDD construit sur le grand entier [25899],\\ compressé avec \texttt{compressionParArbre}}
+\label{fig3}
+\end{figure}
+
+
+
+
+
+\section{Analyse de complexité de notre fonction de compression}
+
+Pour analyser la complexité de l'algorithme, nous compterons cette dernière en nombre de comparaisons \footnote{Que ce soit d'égalité entre deux grands entiers, ou bien dans des structures d'alternatives sur les bits (\texttt{if booléen then [...]} équivaut à comparer le booléen à true et faire le saut correspondant).}. Nous la calculerons d'abord sur la taille de l'arbre. Il sera ensuite possible de passer de la taille de l'arbre à la taille de notre table de vérité par un simple calcul.
+
+
+Notre fonction de compression prend la forme d'un algorithme de type \textbf{diviser pour mieux régner} : lorsqu'on a un arbre de taille n, on commence par résoudre le problème sur les deux enfants de sa racine, qui sont tout deux de taille majorée par n/2\footnote{C'est le cas avant compression car nous avons un arbre parfait par construction, mais puisqu'on recombine des arbres potentiellement compressés, ils peuvent avoir moins de noeuds}, puis on combine nos deux résultats. Analyser la complexité de notre algorithme nécessite alors d'estimer le coût de cette recombinaison. 
+
+Nous analysons la complexité de la fonction suivante : 
+
+\begin{lstlisting}[basicstyle=\scriptsize]
+let compression (arbre : arbre_decision) : arbre_decision = 
+    let rec aux (arbre : arbre_decision) (deja_vus : E.ens) : (arbre_decision * E.ens) = 
+      let feuilles = liste_feuille arbre in 
+      match arbre with
+      | Noeud(profond, sag, sad) -> 
+          let nouveau_sag, n_deja_vus1 = aux sag deja_vus in
+          let nouveau_sad, n_deja_vus2 = aux sad n_deja_vus1 in 
+          	(*Regle de compression Z*)
+            if (deuxieme_moitie_false feuilles) then (nouveau_sag, n_deja_vus2)
+            else 
+            (let grand_entier = (composition64 feuilles) in 
+              match (E.mem grand_entier n_deja_vus2) with     
+              | Some(pointeur) ->
+              		(*Regle de compression M*)
+              		(pointeur, n_deja_vus2) 
+              | None -> 
+                	let nouveau_noeud =   (Noeud (profond,nouveau_sag,nouveau_sad))  
+                  	in ( nouveau_noeud , (E.insert (grand_entier, nouveau_noeud) n_deja_vus2))    
+            )
+      | Feuille(booleen) ->  
+        (let grand_entier = (composition64 feuilles) in 
+          match (E.mem grand_entier deja_vus) with     
+          | Some(pointeur) -> 
+          	(*Regle de compression M *) 
+            (pointeur, deja_vus)                             
+          | None -> ( arbre , (E.insert (grand_entier, arbre) deja_vus))             
+        )
+    in let (g,_) = (aux arbre E.empty) in g
+
+\end{lstlisting}
+
+
+Dans le cas où notre arbre est sous la forme d'un Nœud : 
+\begin{itemize}
+\item Deux appels récursifs (\textit{l.6-7}) sur des sous arbres de taille au maximum $\frac{n}{2}$
+\item Test sur la liste de feuilles pour faire une sortie anticipée selon la règle Z (\textit{l.9}) 
+
+\textbf{Complexité : $O(log n)$}\footnote{La liste de booléens est de taille log(n), on la parcourt}
+\item Calcul du grand entier correspondant au nœud courant (\textit{l.11}) 
+
+\textbf{Complexité : } 
+\item Recherche de ce grand entier dans l'ensemble (\textit{l.12}) :
+
+\begin{itemize}
+\item Retourner le nœud trouvé dans l'ensemble s'il y en a un selon la règle de compression M (\textit{l.15})
+\item Créer un nouveau nœud avec ceux récupérés par les appels récursifs et insérer ce nœud dans l'ensemble sinon (\textit{l.17-18})
+\end{itemize}
+
+\end{itemize}
+
+Dans le cas où notre arbre est sous la forme d'une Feuille : 
+\begin{itemize}
+\item Calcul du grand entier correspondant au nœud courant (\textit{l.21})
+\item Recherche de ce grand entier dans l'ensemble (\textit{l.22}) :
+\begin{itemize}
+\item Retourner le nœud trouvé dans l'ensemble s'il y en a un selon la règle de compression M (\textit{l.25})
+\item retourner l'arbre courant et l'insertion de ce dernier dans l'ensemble sinon (\textit{l.26})
+\end{itemize}
+
+\end{itemize}
+
+Notre pire cas est lorsque pour tous nos arbres visités, ils ne sont pas déjà dans l'ensemble, et qu'il faut donc les rajouter\footnote{On pourrait trouver un pire cas plus fin, en réfléchissant sur la combinaison des feuilles étant donné qu'elles ne peuvent prendre que deux valeurs...}.
+
+
+
+\subsection{Complexité de la fonction \texttt{compresionParListe}}
 
 
 \section{Étude expérimentale}
