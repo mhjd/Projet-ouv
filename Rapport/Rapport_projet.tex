@@ -19,6 +19,7 @@
 \usepackage[hidelinks]{hyperref}
 
 \usepackage{xcolor}
+\usepackage{tcolorbox}
 \usepackage{listings}
 
 
@@ -84,11 +85,9 @@ Sorbonne Université
  \HRule \\[0.4cm]
 { \huge \bfseries Devoir de Programmation \\[0.15cm] }
 
-\HRule \\[2cm]
+\HRule \\[1cm]
 
-\begin{large}
-Danaël CARBONNEAU (28709878), Javaid Mohammad-Habib (21307723) \\
-\end{large}
+Danaël CARBONNEAU (28709878), Javaid Mohammad-Habib (21307723) \\[2cm]
 
 \begin{huge}
 Diagrammes de décision binaires (\textit{ZDD}).
@@ -105,6 +104,8 @@ Master STL, Semestre 1, septembre - janvier 2023 - 2024 \\ [1cm]
 \tableofcontents
 
 
+
+\newpage
 
 \section{Échauffement}
 
@@ -341,14 +342,23 @@ Dans le cas où notre arbre est sous la forme d'un Nœud :
 \item Test sur la liste de feuilles pour faire une sortie anticipée selon la règle Z (\textit{l.9}) 
 
 \textbf{Complexité : $O(log n)$}\footnote{La liste de booléens est de taille log(n), on la parcourt}
+
 \item Calcul du grand entier correspondant au nœud courant (\textit{l.11}) 
 
-\textbf{Complexité : } 
-\item Recherche de ce grand entier dans l'ensemble (\textit{l.12}) :
+\textbf{Complexité : $O(log n)$\footnote{La liste de booléens est de taille log(n), on la parcourt}} 
+
+\item Recherche de ce grand entier dans l'ensemble (\textit{l.12}) 
+
+\textbf{Complexité : $MemE(n)$}, nous la nommons ainsi, il faudra la calculer selon la structure choisie
 
 \begin{itemize}
-\item Retourner le nœud trouvé dans l'ensemble s'il y en a un selon la règle de compression M (\textit{l.15})
+\item Retourner le nœud trouvé dans l'ensemble s'il y en a un selon la règle de compression M (\textit{l.15}) 
+
+\textbf{Complexité : $O(1)$}
+
 \item Créer un nouveau nœud avec ceux récupérés par les appels récursifs et insérer ce nœud dans l'ensemble sinon (\textit{l.17-18})
+
+\textbf{Complexité : $InsE(n)$}, également à calculer
 \end{itemize}
 
 \end{itemize}
@@ -356,10 +366,20 @@ Dans le cas où notre arbre est sous la forme d'un Nœud :
 Dans le cas où notre arbre est sous la forme d'une Feuille : 
 \begin{itemize}
 \item Calcul du grand entier correspondant au nœud courant (\textit{l.21})
+
+\textbf{Complexité : $O(log n)$ (idem \textit{l.11}} 
+
 \item Recherche de ce grand entier dans l'ensemble (\textit{l.22}) :
+
+\textbf{Complexité : $MemE(n)$}, (idem \textit{l.12})
+
 \begin{itemize}
 \item Retourner le nœud trouvé dans l'ensemble s'il y en a un selon la règle de compression M (\textit{l.25})
+\textbf{Complexité : $O(1)$}
+
 \item retourner l'arbre courant et l'insertion de ce dernier dans l'ensemble sinon (\textit{l.26})
+\textbf{Complexité : $InsE(n)$}, (idem \textit{l.17-18})
+
 \end{itemize}
 
 \end{itemize}
@@ -367,8 +387,98 @@ Dans le cas où notre arbre est sous la forme d'une Feuille :
 Notre pire cas est lorsque pour tous nos arbres visités, ils ne sont pas déjà dans l'ensemble, et qu'il faut donc les rajouter\footnote{On pourrait trouver un pire cas plus fin, en réfléchissant sur la combinaison des feuilles étant donné qu'elles ne peuvent prendre que deux valeurs...}.
 
 
+Étant donné que le pire des cas, pour tout n, est lorsque n n'est pas dans l'arbre, on peut majorer la complexité de notre algorithme par 
+
+$$
+T(n) = 2 T(\frac{n}{2}) + 2log(n) + MemE(n) + InsE(n)
+$$
+
+Pour approximer cette borne supérieure, nous allons devoirs étudier plus précisément les ordres de grandeur de $MemE(n)$ et $InsE(n)$, qui diffèrent selon l'implémentation.
+
+On rappelle également le théorème maître, qui nous permet de calculer la complexité d'un algorithme type diviser pour mieux régner : 
+
+
+\begin{tcolorbox}
+
+Soient a $\geq$ 1 et b > 1 deux constantes, soient f une fonction à valeurs dans $\mathbb{R}$ et une fonction de $\mathbb{N}*$ dans $\mathbb{R}^+$ vérifiant pour tout n suffisamment grand l'encadrement suivant : 
+
+
+\begin{align}
+aT(\lfloor\frac{n}{b}\rfloor) + f(n)\leq T(n) \leq aT(\lceil\frac{n}{b}\rceil) + f(n)
+\end{align}
+
+Alors T peut être bornée asymptotiquement comme suit : 
+
+\begin{enumerate}
+\item Si $f(n) = O(n^{(log_b a)- \epsilon})$ pour une certaine constante $\epsilon > 0$, alors $T (n) = \Theta(n^{log_b a})$. \label{th1}
+\item Si $f (n) = \Theta(n^{log_b a})$, alors $T (n) = \Theta(n^{log_b a} log (n))$. \label{th2}
+\item Si $f (n) = \Omega(n^{(log_b a)+\epsilon})$ pour une certaine constante $\epsilon > 0$, et si on a pour $c > 1$ $af(\frac{n}{b}) < cf(n)$, alors $T (n) = \Theta(f(n))$. \label{th3}
+\end{enumerate}
+
+
+
+
+\end{tcolorbox}
+
 
 \subsection{Complexité de la fonction \texttt{compresionParListe}}
+
+Dans notre structure de liste : 
+\begin{itemize}
+\item La complexité d'une insertion est en $O(1)$, étant donné que nous faisons un ajout en tête
+\item La complexité d'une recherche est en $O(L)$, où L est la taille de la liste.
+\end{itemize}
+
+Or, ici, on fait la supposition d'un pire cas où tous les sous arbres sont différents (notre pire cas théorique), pour un arbre de taille n, L est de l'ordre de grandeur de n. L'insertion est donc en $O(n)$. On peut même la considérer en $\Theta(n)$ dans la mesure où on a fait la supposition que l'arbre n'est pas dans la liste pour avoir le pire cas possible.
+
+On en déduit 
+
+\begin{align*}
+T(n) &= 2 T(\frac{n}{2}) + 2log(n) + MemE(n) + InsE(n)\\
+&= 2 T(\frac{n}{2}) + O(log n) + O(1) + \Theta (n)\\
+&= 2 T(\frac{n}{2}) + \Theta (n)
+\end{align*}
+
+Par la règle 2 du théorème maître  \ref{th2}, avec $a = 2$, $b = 2$ et $log_b a = 1$, on obtient 
+
+$$
+T(n) = \Theta (n log (n))
+$$ 
+
+\medskip
+
+Donc \texttt{compressionParListe (g)} = $O(n log (n))$, où g est un graphe de taille n.
+
+
+\subsection{Complexité de la fonction \texttt{compresionParArbre}}
+
+Dans notre structure de liste : 
+\begin{itemize}
+\item La complexité d'une insertion est en $\Theta(L)$, L étant la longueur de la liste de bits, car on va parcourir l'arbre jusqu'à épuiser ses éléments puis insérer l'arbre
+\item La complexité d'une recherche est en $O(L)$, L étant la longueur de la liste de bits, car on va parcourir l'arbre jusqu'à épuiser ses éléments puis retourner le nœud courant, ou bien s'arrêter avant si on trouve une feuille.
+\end{itemize}
+
+Or, ici, la longueur de la liste de bits correspond au nombre de feuilles de notre arbre, qui est majoré par $log_2 (n)$.
+
+\begin{align*}
+T(n) &= 2 T(\frac{n}{2}) + 2log(n) + MemE(n) + InsE(n)\\
+&= 2 T(\frac{n}{2}) + O(log n) + O(log(n)) + \Theta (log(n))\\
+&= 2 T(\frac{n}{2}) + O(log n)
+\end{align*}
+
+Par la règle 1 du théorème maître  \ref{th1}, avec $a = 2$, $b = 2$ et $log_b a = 1$, et le fait que $log(n) = O(n)$\footnote{les logarithmes sont majorés par les fonctions linéaires pour de grandes valeurs} on obtient 
+
+$$
+T(n) = \Theta (n ^{log_2 2}) = \Theta(n)
+$$ 
+
+\medskip
+
+Donc \texttt{compressionParArbre (g)} = $\theta(n)$, où g est un graphe de taille n.
+
+
+
+
 
 
 \section{Étude expérimentale}
