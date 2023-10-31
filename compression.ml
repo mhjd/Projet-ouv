@@ -62,8 +62,13 @@ module AlgoCompression (E : SetDejaVu) =
 
   (*Ces modules sont les applications du foncteur AlgoCompression à SetList et SetTree, et permettent chacun d'appeler
    l'algorithme défini par le foncteur avec leur structure*)
-  module FL = AlgoCompression (SetList);;     (*Question 11*)
-  module FT = AlgoCompression (SetTree);;     (*Question 17*)
+  (*Question 11*)
+  module FL = AlgoCompression (SetList);;     
+  let compressionParListe = FL.compression;;
+
+  (*Question 17*)
+  module FT = AlgoCompression (SetTree);;
+  let compressionParArbre = FT.compression;;
 
 
 
