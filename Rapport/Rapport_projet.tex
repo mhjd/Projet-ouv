@@ -31,7 +31,7 @@
   aboveskip=3mm,
   belowskip=-2mm,
   backgroundcolor=\color{darkWhite},
-  basicstyle=\ttfamily,
+  basicstyle=\footnotesize,
   breakatwhitespace=false,
   breaklines=true,
   captionpos=b,
@@ -84,8 +84,8 @@ Sorbonne Université
  \\[4cm]
  \HRule \\[0.4cm]
 { \huge \bfseries Devoir de Programmation \\[0.15cm] }
-
-\HRule \\[1cm]
+\textbf{UE d'Ouverture}
+\HRule \\[0.5cm]
 
 Danaël CARBONNEAU (28709878), Javaid Mohammad-Habib (21307723) \\[2cm]
 
@@ -94,6 +94,8 @@ Diagrammes de décision binaires (\textit{ZDD}).
 \end{huge}
 
 \vfill
+
+\textit{Enseignants : Antoine Genitrini, Emmanuel Chailloux}
 
 Master STL, Semestre 1, septembre - janvier 2023 - 2024 \\ [1cm]
 
@@ -233,10 +235,10 @@ Nous avons alors pu obtenir un affichage graphique de l'arbre de l'énoncé avan
 \end{figure}
 
 
-
+\newpage
 \begin{figure}[hbtp]
 \centering
-\includegraphics[scale=0.3]{../Images/arbre_compresse_par_liste.png}
+\includegraphics[scale=0.5]{../Images/arbre_compresse_par_liste.png}
 \caption{ZDD construit sur le grand entier [25899],\\ compressé avec CompressionParListe}
 \label{fig2}
 \end{figure}
@@ -268,13 +270,13 @@ Le module \texttt{SetTree} répond à la signature décrite par \texttt{SetDejaV
 
 Maintenant que nous avons un module décrivant une manière de gérer ces ensembles avec des arbres, nous pouvons instancier le foncteur \texttt{AlgoCompression} en lui passant en paramètres notre module \texttt{SeTree}, on peut alors définir la fonction \texttt{compressionParArbre} avec ce foncteur : 
 
+\bigskip
 \begin{lstlisting}
 module FT = AlgoCompression(SetTree)
 let compressionParArbre = FT.compression
 
 \end{lstlisting}
 
-Adapter le code de l'algorithme à la nouvelle structure se fait alors plutôt aisément grâce au foncteur.
 
 
 \subsection{Résultats}
@@ -285,7 +287,7 @@ On obtient alors une image de l'arbre compressé identique à celui de notre ré
 
 \begin{figure}[hbtp]
 \centering
-\includegraphics[scale=0.3]{../Images/arbre_compresse_par_arbre.png}
+\includegraphics[scale=0.5]{../Images/arbre_compresse_par_arbre.png}
 \caption{ZDD construit sur le grand entier [25899],\\ compressé avec \texttt{compressionParArbre}}
 \label{fig3}
 \end{figure}
@@ -335,8 +337,11 @@ let compression (arbre : arbre_decision) : arbre_decision =
 
 \end{lstlisting}
 
-
+\bigskip
 Dans le cas où notre arbre est sous la forme d'un Nœud : 
+
+\bigskip
+
 \begin{itemize}
 \item Deux appels récursifs (\textit{l.6-7}) sur des sous arbres de taille au maximum $\frac{n}{2}$
 \item Test sur la liste de feuilles pour faire une sortie anticipée selon la règle Z (\textit{l.9}) 
@@ -363,7 +368,10 @@ Dans le cas où notre arbre est sous la forme d'un Nœud :
 
 \end{itemize}
 
+\bigskip
 Dans le cas où notre arbre est sous la forme d'une Feuille : 
+\bigskip
+
 \begin{itemize}
 \item Calcul du grand entier correspondant au nœud courant (\textit{l.21})
 
