@@ -94,7 +94,7 @@ let composition64 = composition 64;;
 
 (*Question 5*)
 (*Fonction qui décompose x en base 2 et complète la liste obtenue afin qu'elle soit de taille n (=> table de vérité)*)
-let table x n = completion (decomposition [Int64.of_int x] ) n;;
+let table (x:entier_precis) (n:int) = completion (decomposition x) n;;
   
 
 (*Question 6*)

@@ -43,7 +43,7 @@ let dot (nom : string) (g : arbre_decision) : unit =
 
 (*On construit l'arbre de l'énoncé, puis on utilise la fonction dot pour faire les trois représentations graphiques 
    souhaitées (Questions 13, 14, 18)*)
-let g = cons_arbre (table 25899 16) in
+let g = cons_arbre (table [25899L] 16) in
 (dot "arbre_non_comp.dot" g) ; (dot "arbre_comp_l.dot" (compressionParListe g)) ; (dot "arbre_comp_t.dot" (compressionParArbre g)) ; 
 ;;
 
