@@ -66,7 +66,6 @@ let completion (l:bool list) (n : int) : bool list =
 
 
 (*Question 4*)
-
 (*Fonction auxiliaire renvoyant la liste privée de ses n premiers éléments*)
 let rec suite_liste (l : 'a list) (n : int ) : 'a list = 
   match l with 
@@ -89,6 +88,7 @@ let rec composition (sz : int) (l: bool list)  : entier_precis =
   | [] -> [courant]
   | _-> (courant) :: (composition sz suite);;
 
+(*Application de cette fonction générale à notre cas (des entiers 64 bits)*)
 let composition64 = composition 64;;
 
 
@@ -99,24 +99,22 @@ let table x n = completion (decomposition [Int64.of_int x] ) n;;
 
 (*Question 6*)
 (*Fonction générant un grand entier aléatoire de n bits au maximum*)
-
-
-
-(*
+(*La génération aléatoire peut poser problème vis à vis du bit de signe. *)
 (*Cette version pose problème car avec Random.int64 on est bornés par le max codable sur 64 bits en entier signés, 
   nous ne pouvons pas faire autrement avec Random*)
-  let genAlea (n : int) : entier_precis = 
-    let rec aux (n : int) (acc : entier_precis) = 
-      if n = 0 then acc else (aux (n-1) ((Random.int64 Int64.max_int) ::acc))
-    in let l = n/64 in let binf = n - l*64 in (aux l [(Random.int64 (Int64.of_int binf) )]);;
-  *)
-(* Cette version ne marche pas avant OCaml 4.14... On ne l'a pas encore dans les toplevel*)
+    (*let genAlea (n : int) : entier_precis = 
+        let rec aux (n : int) (acc : entier_precis) = 
+          if n = 0 then acc else (aux (n-1) ((Random.int64 Int64.max_int) ::acc))
+        in let l = n/64 in let binf = n - l*64 in (aux l [(Random.int64 (Int64.of_int binf) )]);;
+    *)
+(* Cette version ne fonctionne qu'avec une version 4.14 ou au delà*)
 let genAlea (n : int) : entier_precis = 
   let rec aux (n : int) (acc : entier_precis) = 
     if n = 0 then acc else (aux (n-1) (Random.bits64()::acc))
   in let l = n/64 in let binf = n - l*64 in (aux l [(Random.int64 (Int64.of_int binf) )]);;
 
 
+  (*Fonction permettant de faire des affichages de nos entiers pour des tests*)
   let print_entier_precis (entier : entier_precis) : unit= 
     Printf.printf "[";
     let rec aux (e : entier_precis) : unit = 
@@ -127,8 +125,9 @@ let genAlea (n : int) : entier_precis =
     in (aux entier);;
 
 
+  (*Rapide test de la génération aléatoire de grands entiers*)
   Random.self_init ();;
-Printf.printf("\n~~ Test de la génération aléatoire de grands entiers ~~ \n\n");
+  Printf.printf("\n~~ Test de la génération aléatoire de grands entiers ~~ \n\n");
   print_entier_precis (genAlea 100);;
 
 

@@ -3,7 +3,12 @@ open Arbre_decision
 open Grands_entiers
 open Deja_vus
 
-let format_print_graphe f g = 
+(*Ce code sert à gérer la production d'images représentant nos ZDD*)
+
+
+(*Question 12*)
+(*Formattage pour les noeuds *)
+let format_print_noeud f g = 
   match g with 
   | Feuille (booleen) -> 
     if booleen then Printf.fprintf f "\n%d [shape = box, label = True,color =green];" (Obj.magic g)
@@ -15,13 +20,13 @@ let format_print_graphe f g =
   ;;
 
 
+(*Fonction crééant, ouvrant, et remplissant un fichier .dot dont le nom est passé en paramètres*)
 let dot (nom : string) (g : arbre_decision) : unit =
   let f = open_out nom in (*Ouverture du fichier où on met le graphe*)
-
   (* *)
     (*Fonction locale permettant de mettre tous les noeuds de l'arbre au bon format en faisant un parcourt du graphe*)
     let rec print_graphe (graphe : arbre_decision ) (bordure : arbre_decision  list) (vus : arbre_decision  list): unit = 
-    if (not (List.memq graphe vus)) then format_print_graphe f graphe ;  (*Si on n'a pas déjà imprimé ce noeud, on le fait*)
+    if (not (List.memq graphe vus)) then format_print_noeud f graphe ;  (*Si on n'a pas déjà imprimé ce noeud, on le fait*)
      match (graphe, bordure) with 
       | (Feuille(booleen),[])-> ()    (*On a fini la bordure et on est sur un noeud sans fils*)
       | (Feuille(_),h::tl) -> (print_graphe h tl (graphe::vus))   (*Noeud sans fils mais toujours des noeuds dans la bordure*)
@@ -34,10 +39,11 @@ let dot (nom : string) (g : arbre_decision) : unit =
   close_out f;
 ;;
 
-module FL = AlgoCompression (SetList);;
-module FT = AlgoCompression (SetTree);;
 
+
+(*On construit l'arbre de l'énoncé, puis on utilise la fonction dot pour faire les trois représentations graphiques 
+   souhaitées (Questions 13, 14, 18)*)
 let g = cons_arbre (table 25899 16) in
-(dot "arbre_non_comp.dot" g) ; (dot "arbre_comp_l.dot" (FT.compression g)) ; 
+(dot "arbre_non_comp.dot" g) ; (dot "arbre_comp_l.dot" (FL.compression g)) ; (dot "arbre_comp_t.dot" (FT.compression g)) ; 
 ;;
 

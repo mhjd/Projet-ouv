@@ -25,4 +25,4 @@ dot.cmo :
 
 
 clean : 
-	rm -f *.cmo *.cmi *.exe *.dot
+	rm -f *.cmo *.cmi *.exe *.dot *.cmx *.o

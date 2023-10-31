@@ -1,7 +1,0 @@
-rm -f *.cmo *.cmi *.exe *.dot
-ocamlc -c grands_entiers.ml
-ocamlc -c arbre_decision.ml
-ocamlc -c deja_vus.ml
-ocamlc -c compression.ml
-ocamlc -c dot.ml
-ocamlc grands_entiers.cmo arbre_decision.cmo deja_vus.cmo compression.cmo  dot.cmo -o dot.exe
