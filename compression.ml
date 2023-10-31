@@ -48,7 +48,6 @@ module AlgoCompression (E : SetDejaVu) =
 
       | Feuille(booleen) ->  (*On évite la duplication des feuilles également*)
         (let grand_entier = (composition64 feuilles) in 
-
           match (E.mem grand_entier deja_vus) with     (*Consultation de l'ensemble des noeuds visités*)
           | Some(pointeur) -> (*Règle de compression M *) 
             (pointeur, deja_vus)                             (*On remplace pour le père ce noeud par l'autre qui lui correspond*)
