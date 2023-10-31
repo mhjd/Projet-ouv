@@ -110,8 +110,8 @@ let table (x:entier_precis) (n:int) = completion (decomposition x) n;;
 (* Cette version ne fonctionne qu'avec une version 4.14 ou au delà*)
 let genAlea (n : int) : entier_precis = 
   let rec aux (n : int) (acc : entier_precis) = 
-    if n = 0 then acc else (aux (n-1) (Random.bits64()::acc))
-  in let l = n/64 in let binf = n - l*64 in (aux l [(Random.int64 (Int64.of_int binf) )]);;
+    if n <= 1 then acc else (aux (n-1) (Random.bits64()::acc))
+  in let l = n/64 in let binf = n mod 64 in (aux l [ (Int64.shift_right_logical (Random.bits64()) (64-binf)) ]);;
 
 
   (*Fonction permettant de faire des affichages de nos entiers pour des tests*)
@@ -128,6 +128,6 @@ let genAlea (n : int) : entier_precis =
   (*Rapide test de la génération aléatoire de grands entiers*)
   Random.self_init ();;
   Printf.printf("\n~~ Test de la génération aléatoire de grands entiers ~~ \n\n");
-  print_entier_precis (genAlea 100);;
+  print_entier_precis (genAlea 63);;
 
 
