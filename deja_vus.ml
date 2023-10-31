@@ -49,15 +49,14 @@ module SetTree : SetDejaVu = struct
     in (aux e_p_booleen ensemble)
 
   let mem (grd_entier : entier_precis) (l : t) : (arbre_decision option)= 
-    let grd_entier_booleen = decomposition grd_entier in 
     let rec aux (liste_booleens : bool list) (arbre : t) : arbre_decision option = 
       match arbre with
       | Node(pointeur, sag, sad) -> (
-          match grd_entier_booleen with
-          | false::t -> aux t sad 
-          | true::t  -> aux t sag
+          match liste_booleens with
+          | false::t -> aux t sag
+          | true::t  -> aux t sad
           | [] -> pointeur
         )
       | Leaf -> None
-    in (aux grd_entier_booleen l)
+    in (aux (decomposition grd_entier) l)
   end;;
