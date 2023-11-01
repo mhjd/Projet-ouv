@@ -3,26 +3,25 @@ open Arbre_decision
 open Grands_entiers
 open Deja_vus
 
+
+
 let time_of f =
   let debut = Sys.time() in
   let _ = f in
   let fin = Sys.time() in
-  (*étrange, faut mettre -. pour faire une substraction entre float*)
   fin -. debut
 ;;
-(* j'ai mis un float en sortie, car ça permet de l'utiliser dans test_compression
- j'aurais pu laisser en int, et passer la fonction + ou +. en argument mais galère pour rien*)
+
+(*Note : on a fait une fonction qui calcule en flottant pour éviter les conversions par la suite...*)
 let rec size_of (t:arbre_decision):float=
   match t with
   | Noeud (_, sag, sad) -> 1.0 +. size_of sag +. size_of sad
   | Feuille(_) -> 0.0
 ;;
     
-(* À l'air de fonctionné :  *)
-(* Printf.printf "taille d'un arbre 16 : %f \n " (size_of (cons_arbre(table (genAlea(16)) 16))) *)
 
 
-
+(*Question 20*)
 let test_compression algo_de_test algo_compression  n max_bits =
   let data_list = ref [] in
   let bits = ref 2 in
@@ -69,12 +68,7 @@ in
 write_data_to_file data1 data2 taille;
 
 close_out file;;
-(*
-  set title "Comparaison du temps d'exécution"
-  set xlabel "Taille (log du nombre de bits)"
-  set ylabel "Temps (en secondes)"
-  plot "compression_temps.txt" using 1:2 with lines title "compression par liste", "compression_temps.txt" using 1:3 with lines title "compression par arbre"
- *)
+
 let file = open_out "compression_taille.txt";;
 
 let data2 = (test_compression_taille compressionParArbre 200 500);;
@@ -94,12 +88,36 @@ write_data_to_file data1 data2 taille;
 
 close_out file;;
 
-(*
-  set title "Comparaison de la taille après compression"
-  set xlabel "Taille (log du nombre de bits)"
-  set ylabel "Taille après compression (nombre de noeud)"
-  plot "compression_taille.txt" using 1:2 with lines title "compression par liste", "compression_taille.txt" using 1:3 with lines title "compression par arbre"
-*)
+
+
+
+(*Question 21*)
+(*Calcul de la distribution de la taille de la table*)
+let rec sz (a : arbre_decision) : int = 
+  match a with 
+  | Feuille(_) -> 1
+  | Noeud (_, fg, fd) -> 1 + (sz fg) + (sz fd);;
+let distribution_probabilite (n : int) (occur : int): int Array.t = 
+  let a = Array.make (2*n -1) 0 in 
+  for i = 0 to occur-1 do 
+    let sz = (sz (compressionParListe (cons_arbre (table (genAlea n) n))))-1
+    in  a.(sz) <- a.(sz)+1
+  done;
+  a;;
+
+Random.self_init;;
+
+let print_distrib (n : int) (occur : int): unit= 
+  let file = open_out "distribution_probabilite.txt" in
+  let a = (distribution_probabilite n occur) in 
+  for i = 0 to (Array.length a)-1 do 
+    Printf.fprintf file "%d\t%f\n" (i+1) ((Int.to_float a.(i))/. (Int.to_float occur));
+  done;
+  close_out file;;
+
+print_distrib 512 1000;;
+
+
 
 
 
