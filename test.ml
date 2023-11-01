@@ -30,21 +30,18 @@ let test_compression algo_de_test algo_compression  n max_bits =
     Printf.printf "bits : %d \n" !bits;
     let total = ref 0.0 in
     for nb_test = 0 to n do
-
-       (* Printf.printf "numéro de test : %d \n" nb_test; *)
        let my_tree = cons_arbre (table (genAlea(!bits)) !bits)
        in let my_data = algo_de_test (algo_compression my_tree)
        in total := !total +. my_data
     done;
-    (* Printf.printf "temps est de %f pour %d bits \n " !total  !bits ; *)
-    data_list := (!total (* /. (float_of_int n) *))::!data_list;
+    data_list := (!total)::!data_list;
     bits := (!bits)*2
   done;
     !data_list
 ;;
 
 let rec test_compression_temps = test_compression time_of ;;
-let rec test_compression_taille = test_compression  size_of;;
+let rec test_compression_taille = test_compression size_of;;
 
 
 let rec gen_liste (n:int):int list =
@@ -99,10 +96,10 @@ write_data_to_file data1 data2 taille;
 close_out file;;
 
 (*
- set title "Comparaison de la taille après compression"
- set xlabel "Taille (log du nombre de bits)"
- set ylabel "Taille après compression (nombre de noeud)"
- plot "compression_taille.txt" using 1:2 with lines title "compression par liste", "compression_taille.txt" using 1:3 with lines title "compression par arbre"
+  set title "Comparaison de la taille après compression"
+  set xlabel "Taille (log du nombre de bits)"
+  set ylabel "Taille après compression (nombre de noeud)"
+  plot "compression_taille.txt" using 1:2 with lines title "compression par liste", "compression_taille.txt" using 1:3 with lines title "compression par arbre"
 *)
 
 
