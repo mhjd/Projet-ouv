@@ -27,7 +27,6 @@ let test_compression algo_de_test algo_compression  n max_bits =
   let data_list = ref [] in
   let bits = ref 2 in
   while !bits < max_bits do
-    Printf.printf "bits : %d \n" !bits;
     let total = ref 0.0 in
     for nb_test = 0 to n do
        let my_tree = cons_arbre (table (genAlea(!bits)) !bits)
@@ -37,7 +36,7 @@ let test_compression algo_de_test algo_compression  n max_bits =
     data_list := (!total)::!data_list;
     bits := (!bits)*2
   done;
-    !data_list
+    List.rev !data_list
 ;;
 
 let rec test_compression_temps = test_compression time_of ;;
